@@ -1,17 +1,19 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('SECRET_KEY', default='django-insecure-j_89af+30&&4qm*8z9_(^zz8p4-ho8z_m6ylm0s$h!-p@on1_^')
 
-SECRET_KEY = 'django-insecure-j_89af+30&&4qm*8z9_(^zz8p4-ho8z_m6ylm0s$h!-p@on1_^'
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.getenv('DEBUG', default='False').lower() == 'true'
 
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
+# Разрешённые хосты из переменной окружения (через запятую)
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS if host.strip()]
 
 # Application definition
-
 INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'django.contrib.admin',
@@ -55,21 +57,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-
 # Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
+        'NAME': os.getenv('DB_NAME', default='taski'),
+        'USER': os.getenv('POSTGRES_USER', default='taski_user'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='taski_password'),
+        'HOST': os.getenv('DB_HOST', default='db'),
+        'PORT': os.getenv('DB_PORT', default='5432'),
     }
 }
 
-
 # Password validation
-# https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -85,31 +85,22 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
-# https://docs.djangoproject.com/en/3.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
+# Static files
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# CORS settings
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'https://taski16.duckdns.org',
 ]
